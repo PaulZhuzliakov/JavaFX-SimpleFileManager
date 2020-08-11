@@ -1,0 +1,17 @@
+/*класс ячейки листа*/
+.list-cell {
+    -fx-font-famyly: Monospaced;
+    -fx-font-size: 12;
+    -fx-background-color: #f9fffd;
+}
+
+
+/*для нечётный элементов другой стиль заднего фона*/
+.list-cell:odd {
+    -fx-background-color: #e8e8ee;
+}
+
+/*выбранные ячейки*/
+.list-cell:selected {
+    -fx-background-color: #5777b9;
+}
