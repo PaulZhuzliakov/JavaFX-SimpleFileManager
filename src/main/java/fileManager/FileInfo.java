@@ -24,15 +24,12 @@ public class FileInfo {
     public String getFileName() {
         return fileName;
     }
-
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-
     public long getLength() {
         return length;
     }
-
     public void setLength(long length) {
         this.length = length;
     }
