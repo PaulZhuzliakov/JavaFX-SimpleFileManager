@@ -31,17 +31,32 @@ public class Controller implements Initializable {
         filesList.getItems().addAll(files);
 
         //.setCellFactory()  - генерирует ячейки для ListView
-//        filesList.setCellFactory(new Callback<ListView<FileInfo>, ListCell<FileInfo>>() {
-//            @Override
-//            public ListCell<FileInfo> call(ListView<FileInfo> fileInfoListView) {
-//                return new ListCell<FileInfo>() {
-//                    @Override
-//                    protected void updateItem(FileInfo item, boolean empty) {
-//                        super.updateItem(item, empty);
-//                    }
-//                };
-//            }
-//        });
+        filesList.setCellFactory(new Callback<ListView<FileInfo>, ListCell<FileInfo>>() {
+            @Override
+            public ListCell<FileInfo> call(ListView<FileInfo> param) {
+                return new ListCell<FileInfo>() {
+                    @Override
+                    protected void updateItem(FileInfo item, boolean empty) {
+                        super.updateItem(item, empty);
+                        //если нет информации о файле или ячейка пустая
+                        if (item == null || empty) {
+                            setText(null);
+                            setStyle("");
+                        } else {
+                            //%s - строка. ограничение строки не более 30ти символов,"-" - выравнивание по левому краю
+                            String formattedFileName = String.format("%-30s", item.getFileName());
+                            //%d - число, "," - разделитель
+                            String formattedFileLength = String.format("%,d bytes", item.getLength());
+                            if (item.getLength() == -1L) {
+                                formattedFileLength = String.format("%s", "Директория");
+                            }
+                            String text = String.format("%s %-20s", formattedFileName, formattedFileLength);
+                            setText(text);
+                        }
+                    }
+                };
+            }
+        });
     }
 
     public void btnExit(ActionEvent actionEvent) {
