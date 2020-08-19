@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -23,12 +24,20 @@ public class Controller implements Initializable {
     @FXML
     ListView<FileInfo> filesList;
 
+    @FXML
+    TextField pathField;
+
+    //нужно запоминать текущий адрес
+    Path root;
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //Paths.get - способ создания пассов в Java NIO. Pass - то интефейс, нельзя создать объект интерфейса
-        Path root = Paths.get("forTests");
-        List<FileInfo> files = scanFiles(root);
-        filesList.getItems().addAll(files);
+        //Paths.get - способ создания пассов в Java NIO. Path - то интефейс, нельзя создать объект интерфейса
+//        Path root = Paths.get("forTests");
+
+
+
 
         //.setCellFactory()  - генерирует ячейки для ListView
         filesList.setCellFactory(new Callback<ListView<FileInfo>, ListCell<FileInfo>>() {
@@ -57,10 +66,22 @@ public class Controller implements Initializable {
                 };
             }
         });
+        goToPath(Paths.get("forTests"));
     }
 
     public void btnExit(ActionEvent actionEvent) {
         Platform.exit();
+    }
+
+    public void goToPath(Path path) {
+        //запоминаем папку куда перемещаемся
+        root = path;
+        //путь прописывается в pathField`е
+        pathField.setText(root.toAbsolutePath().toString());
+        //еред тем как заполнять коллекцию, её нужно почистить
+        filesList.getItems().clear();
+        //список файлов обновляется на соответствующую папку
+        filesList.getItems().addAll(scanFiles(path));
     }
 
 //создание списка FileInfo по пути с помощью StreamAPI, короткий вариант

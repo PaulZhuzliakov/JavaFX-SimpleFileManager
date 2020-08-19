@@ -14,7 +14,7 @@
             <MenuItem text = "Выход" onAction="#btnExit"/>
         </Menu>
     </MenuBar>
-    <TextField editable="false"/>
+    <TextField editable="false" fx:id="pathField" />
     <ListView VBox.vgrow="ALWAYS" fx:id="filesList"/>
     <HBox spacing="5">
         <Button text="Просмотр" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
