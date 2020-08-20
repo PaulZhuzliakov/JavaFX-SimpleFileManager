@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -35,8 +36,6 @@ public class Controller implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //Paths.get - способ создания пассов в Java NIO. Path - то интефейс, нельзя создать объект интерфейса
 //        Path root = Paths.get("forTests");
-
-
 
 
         //.setCellFactory()  - генерирует ячейки для ListView
@@ -82,9 +81,20 @@ public class Controller implements Initializable {
         filesList.getItems().clear();
         //список файлов обновляется на соответствующую папку
         filesList.getItems().addAll(scanFiles(path));
+        filesList.getItems().sort(new Comparator<FileInfo>() {
+            @Override
+            //компаратор возвращает 1, если первое число больше второго; -1 если наоборот. 0 если равны;
+            public int compare(FileInfo f1, FileInfo f2) {
+                //если знак первого файла не равен знаку второго файл. т.е. один файл, а другой директоря
+                if ((int) Math.signum(f1.getLength()) == (int) Math.signum(f2.getLength())) {
+                    return f1.getFileName().compareTo(f2.getFileName());
+                }
+                return new Long(f1.getLength() - f2.getLength()).intValue();
+            }
+        });
     }
 
-//создание списка FileInfo по пути с помощью StreamAPI, короткий вариант
+    //создание списка FileInfo по пути с помощью StreamAPI, короткий вариант
     public List<FileInfo> scanFiles(Path root) {
         //Files.list(root)              - запрос списка файлов в директории, возвращается Stream путей
         //.map(FileInfo::new)           - Stream путей преобразуется в FileInfo
