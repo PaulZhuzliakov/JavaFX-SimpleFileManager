@@ -5,8 +5,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class FileInfo {
+    public static final String UpToken = "[..]";
     private String fileName;
     private long length;
+
+    //нужен элемент, который будет отображаться всегда верхним в списке файлов
+    public FileInfo(String fileName, long length) {
+        this.fileName = fileName;
+        this.length = length;
+    }
 
     public FileInfo(Path path) {
         this.fileName = path.getFileName().toString();
@@ -19,6 +26,16 @@ public class FileInfo {
                 throw new RuntimeException("Something wrong with file: " + path.toAbsolutePath().toString());
             }
         }
+    }
+
+    //возвращает true, если объет FileInfo является папкой
+    public boolean isDirectory() {
+        return length == -1L;
+    }
+
+    //возвращает true, если объет FileInfo является папкой
+    public boolean isUpElement() {
+        return length == -2L;
     }
 
     public String getFileName() {

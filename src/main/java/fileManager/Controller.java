@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -58,6 +59,9 @@ public class Controller implements Initializable {
                             if (item.getLength() == -1L) {
                                 formattedFileLength = String.format("%s", "Директория");
                             }
+                            if (item.getLength() == -2L) {
+                                formattedFileLength = "";
+                            }
                             String text = String.format("%s %-20s", formattedFileName, formattedFileLength);
                             setText(text);
                         }
@@ -79,17 +83,23 @@ public class Controller implements Initializable {
         pathField.setText(root.toAbsolutePath().toString());
         //еред тем как заполнять коллекцию, её нужно почистить
         filesList.getItems().clear();
+        //переход на уровень выше. Будет выше директорий, потому что размер ещё меньше
+        filesList.getItems().add(new FileInfo(FileInfo.UpToken, -2L));
+
         //список файлов обновляется на соответствующую папку
         filesList.getItems().addAll(scanFiles(path));
         filesList.getItems().sort(new Comparator<FileInfo>() {
             @Override
-            //компаратор возвращает 1, если первое число больше второго; -1 если наоборот. 0 если равны;
+            //лексографическая сортировка папок и файлов
+            // компаратор возвращает 1, если первое число больше второго; -1 если наоборот. 0 если равны;
             public int compare(FileInfo f1, FileInfo f2) {
-                //если знак первого файла не равен знаку второго файл. т.е. один файл, а другой директоря
-                if ((int) Math.signum(f1.getLength()) == (int) Math.signum(f2.getLength())) {
+                if (f1.getFileName().equals(FileInfo.UpToken))
+                    return -1;
+                //если знаки одинаковые(два положительных или два отрицательных), то это две папки или два файла
+                if ((int)Math.signum(f1.getLength()) == (int)Math.signum(f2.getLength())) {
                     return f1.getFileName().compareTo(f2.getFileName());
                 }
-                return new Long(f1.getLength() - f2.getLength()).intValue();
+                return (int) (f1.getLength()-f2.getLength());
             }
         });
     }
@@ -121,5 +131,24 @@ public class Controller implements Initializable {
 //            throw new RuntimeException("Files scan exception: " + root);
 //        }
 //    }
+
+    //переход в пвпку
+    public void filesListClicked(MouseEvent mouseEvent) {
+         if (mouseEvent.getClickCount() ==2) {
+             FileInfo fileInfo = filesList.getSelectionModel().getSelectedItem();
+             //если двойной клик не был сделан в пустое пространство
+             if (fileInfo != null) {
+                 if (fileInfo.isDirectory()) {
+                     Path pathTo = root.resolve(fileInfo.getFileName());
+                     goToPath(pathTo);
+                 }
+                 if (fileInfo.isUpElement()) {
+                     Path pathTo = root.toAbsolutePath().getParent();
+                     goToPath(pathTo);
+                 }
+             }
+         }
+    }
+
 
 }
