@@ -15,8 +15,8 @@
     <HBox spacing="5">
         <Button maxWidth="Infinity" text="Просмотр" HBox.hgrow="ALWAYS" />
         <Button maxWidth="Infinity" text="Копирование" HBox.hgrow="ALWAYS" onAction="#copyAction"/>
-        <Button maxWidth="Infinity" text="Перемещение" HBox.hgrow="ALWAYS" />
-        <Button maxWidth="Infinity" text="Удаление" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" text="Перемещение" HBox.hgrow="ALWAYS" onAction="#moveAction"/>
+        <Button maxWidth="Infinity" text="Удаление" HBox.hgrow="ALWAYS" onAction="#deleteAction"/>
         <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
         </padding>

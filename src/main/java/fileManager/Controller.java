@@ -32,6 +32,8 @@ public class Controller implements Initializable {
 
     Path selectedCopyFile;
 
+    Path selectedMoveFile;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //Paths.get - способ создания пассов в Java NIO. Path - то интефейс, нельзя создать объект интерфейса
@@ -181,6 +183,49 @@ public class Controller implements Initializable {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно скопировать файл");
                 alert.showAndWait();
             }
+        }
+    }
+
+    public void moveAction(ActionEvent actionEvent) {
+        FileInfo fileInfo = filesList.getSelectionModel().getSelectedItem();
+        if (selectedMoveFile == null && (fileInfo == null || fileInfo.isDirectory() || fileInfo.isUpElement())) {
+            return;
+        }
+        //.getSource() - В событии есть информация о том элементе, который вызвал это событие
+        //каст события к Button
+        if (selectedMoveFile == null) {
+            selectedMoveFile = root.resolve(fileInfo.getFileName());
+            ((Button) actionEvent.getSource()).setText("Перемещается: " + selectedMoveFile);
+            return;
+        }
+        //если этот файл ести и кнопку нажзимают ещё раз
+        if (selectedMoveFile != null) {
+            //перезаписать существующий в случае совпадения
+            try {
+                //опируем не просто в папку, а в папку + имя файла .resolve(selectedCopyFile.getFileName())
+                Files.move(selectedMoveFile, root.resolve(selectedMoveFile.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+                //после копирования очищаем временный Путь
+                selectedMoveFile = null;
+                ((Button) actionEvent.getSource()).setText("Перемещение");
+                refresh();
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно переместить файл");
+                alert.showAndWait();
+            }
+        }
+    }
+
+    public void deleteAction(ActionEvent actionEvent) {
+        FileInfo fileInfo = filesList.getSelectionModel().getSelectedItem();
+        if (fileInfo == null || fileInfo.isDirectory() || fileInfo.isUpElement()) {
+            return;
+        }
+        try {
+            Files.delete(root.resolve(fileInfo.getFileName()));
+            refresh();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно удалить выбранный файл");
+            alert.showAndWait();
         }
     }
 }
